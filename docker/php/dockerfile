@@ -1,0 +1,64 @@
+FROM php:8.4-fpm
+
+LABEL maintainer="Muhammad Ilyas"
+
+WORKDIR /var/www
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    unzip \
+    zip \
+    nano \
+    vim \
+    default-mysql-client \
+    libzip-dev \
+    libicu-dev \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    libxml2-dev \
+    libonig-dev \
+    libpq-dev \
+    libsqlite3-dev \
+    sqlite3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install PHP Extension Installer
+COPY --from=ghcr.io/mlocati/php-extension-installer:latest /usr/bin/install-php-extensions /usr/local/bin/
+
+# Install PHP extensions
+RUN install-php-extensions \
+    bcmath \
+    exif \
+    gd \
+    intl \
+    mysqli \
+    opcache \
+    pcntl \
+    pdo_mysql \
+    redis \
+    zip
+
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# PHP configuration
+COPY .docker/php.ini /usr/local/etc/php/conf.d/custom.ini
+
+# Create application user
+RUN groupadd -g 1000 www && \
+    useradd -u 1000 -ms /bin/bash -g www www
+
+# Copy application
+COPY . .
+
+# Permissions
+RUN chown -R www:www /var/www
+
+USER www
+
+EXPOSE 9000
+
+CMD ["php-fpm"]
