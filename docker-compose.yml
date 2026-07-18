@@ -2,11 +2,11 @@ services:
 
   auth-app:
     build:
-      context: ./auth-service
+      context: ./backend/auth-service
     container_name: auth-app
     working_dir: /var/www
     volumes:
-      - ./auth-service:/var/www
+      - ./backend/auth-service:/var/www
     networks:
       - micro
 
@@ -16,8 +16,8 @@ services:
     ports:
       - "8001:80"
     volumes:
-      - ./auth-service:/var/www
-      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./backend/auth-service:/var/www
+      - ./backend/docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - auth-app
     networks:
@@ -25,11 +25,11 @@ services:
 
   user-app:
     build:
-      context: ./user-service
+      context: ./backend/user-service
     container_name: user-app
     working_dir: /var/www
     volumes:
-      - ./user-service:/var/www
+      - ./backend/user-service:/var/www
     networks:
       - micro
 
@@ -39,8 +39,8 @@ services:
     ports:
       - "8002:80"
     volumes:
-      - ./user-service:/var/www
-      - ./docker/nginx/user-service.conf:/etc/nginx/conf.d/default.conf
+      - ./backend/user-service:/var/www
+      - ./backend/docker/nginx/user-service.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - user-app
     networks:
