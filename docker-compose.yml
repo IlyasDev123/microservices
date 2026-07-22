@@ -78,6 +78,23 @@ services:
       - "8080:80"
     networks:
       - micro
+  gateway:
+    image: nginx:1.28-alpine
+    container_name: gateway
+    restart: unless-stopped
+
+    ports:
+      - "8000:80"
+
+    volumes:
+      - ./gateway/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+    depends_on:
+      - auth-nginx
+      - user-nginx
+
+    networks:
+      - micro
 
   frontend:
     build:
@@ -98,6 +115,21 @@ services:
       - user-nginx
     networks:
       - micro
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - micro
 
 networks:
   micro:
@@ -106,3 +138,4 @@ volumes:
   mysql-data:
   frontend_node_modules:
   frontend_next:
+  rabbitmq-data:

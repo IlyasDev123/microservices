@@ -4,6 +4,7 @@ namespace App\Actions\Auth;
 
 use App\Contracts\UserRepositoryInterface;
 use App\DTOs\Auth\RegisterUserData;
+use App\Events\UserCreated;
 use App\Exceptions\UserAlreadyExistsException;
 use App\Models\User;
 use App\UserStatus;
@@ -23,11 +24,15 @@ class RegisterUserAction
             throw new UserAlreadyExistsException($data->email);
         }
 
-        return $this->userRepository->create([
+        $user = $this->userRepository->create([
             'name' => $data->name,
             'email' => $data->email,
             'password' => $data->password,
             'status' => UserStatus::Active,
         ]);
+
+        UserCreated::dispatch($user);
+
+        return $user;
     }
 }

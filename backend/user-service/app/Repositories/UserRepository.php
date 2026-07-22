@@ -8,6 +8,20 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class UserRepository implements UserRepositoryInterface
 {
+    public function __construct()
+    {
+        //
+    }
+    public function create(array $attributes): User
+    {
+        return User::create($attributes);
+    }
+
+    public function upsert(array $attributes, array $options): User
+    {
+        return User::updateOrCreate($attributes, $options);
+    }
+
     public function paginate(int $perPage = 15): LengthAwarePaginator
     {
         return User::latest()->paginate($perPage);

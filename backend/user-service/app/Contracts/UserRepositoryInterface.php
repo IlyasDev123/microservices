@@ -7,6 +7,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 interface UserRepositoryInterface
 {
+    public function upsert(array $attributes, array $options): User;
+
     public function paginate(int $perPage = 15): LengthAwarePaginator;
 
     public function findById(int $id): ?User;
